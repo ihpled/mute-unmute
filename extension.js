@@ -27,7 +27,9 @@ const Mainloop = imports.mainloop;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Volume = imports.ui.status.volume;
-const _ = ExtensionUtils.gettext;
+const Gettext = imports.gettext;
+const Domain = Gettext.domain(GETTEXT_DOMAIN);
+const _ = Domain.gettext;
 
 const DEFAULT_OUTPUT_ICON = 'audio-speakers-symbolic';
 
