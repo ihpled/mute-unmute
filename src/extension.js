@@ -60,6 +60,13 @@ class Indicator extends PanelMenu.Button {
             this._updateOutputIcon(); 
         });
 
+        this._volume_event_id = this._volume.connect('button-press-event', (actor, event) => {
+            if (event.get_button() === Clutter.BUTTON_MIDDLE) {
+                this._toggleMuted();
+                return Clutter.EVENT_STOP;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        });
     }
 
     _updateOutputIcon() {
@@ -81,6 +88,8 @@ class Indicator extends PanelMenu.Button {
             this._volumeMenu._output._icon.disconnect(this._output_icon_event_id);    
         if (this._stream_changed_id)
             Volume.getMixerControl().disconnect(this._stream_changed_id);
+        if (this._volume_event_id)
+            this._volume.disconnect(this._volume_event_id);
         this._volumeMenu._output._icon.icon_name = DEFAULT_OUTPUT_ICON;
         super._onDestroy();
     }
