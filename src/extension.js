@@ -36,7 +36,7 @@ const DEFAULT_OUTPUT_ICON = 'audio-speakers-symbolic';
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
     _init() {
-        super._init(0.0, _('My Shiny Indicator'), true);
+        super._init(0.0, _('Mute Unmute Indicator'), true);
 
         this.hide();
 
@@ -95,12 +95,9 @@ class Indicator extends PanelMenu.Button {
     }
 
     _onClicked(actor, event) {
-        if ((event.type() !== Clutter.EventType.TOUCH_BEGIN && event.type() !== Clutter.EventType.BUTTON_PRESS)) {
-            // Some other non-clicky event happened; bail
-            return Clutter.EVENT_PROPAGATE;
-        }
-        this._toggleMuted();
-        
+        if ((event.type() == Clutter.EventType.TOUCH_BEGIN || event.type() == Clutter.EventType.BUTTON_PRESS)) {
+            this._toggleMuted();
+        }    
         return Clutter.EVENT_STOP;
     }
 
