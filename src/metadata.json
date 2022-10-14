@@ -6,9 +6,10 @@
     "3.38",
     "40",
     "41",
-    "42"
+    "42",
+    "43"
   ],
   "url": "https://github.com/ihpled/mute-unmute",
   "uuid": "mute-unmute@mcast.gnomext.com",
-  "version": 8
+  "version": 9
 }

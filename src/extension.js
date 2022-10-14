@@ -40,9 +40,15 @@ class Indicator extends PanelMenu.Button {
 
         this.hide();
 
-        this._aggregateMenu = Main.panel.statusArea.aggregateMenu;
-        this._volume = this._aggregateMenu._volume;
-        this._volumeMenu = this._volume._volumeMenu;
+        if (Main.panel.statusArea.aggregateMenu) {
+            // Gnome 3.36 -> 42
+            this._volume = Main.panel.statusArea.aggregateMenu._volume;
+            this._volumeMenu = this._volume._volumeMenu;
+        } else if (Main.panel.statusArea.quickSettings) {
+            // Gnome 43
+            this._volume = Main.panel.statusArea.quickSettings._volume;
+            this._volumeMenu = this._volume;
+        }
 
         this._volumeMenu._output._icon.set_reactive(true);
         this._output_icon_event_id = this._volumeMenu._output._icon.connect('event', this._onClicked.bind(this));
