@@ -31,7 +31,8 @@ const Gettext = imports.gettext;
 const Domain = Gettext.domain(GETTEXT_DOMAIN);
 const _ = Domain.gettext;
 
-const DEFAULT_OUTPUT_ICON = 'audio-speakers-symbolic';
+let OUTPUT_ICON = 'audio-speakers-symbolic';
+const MUTE_ICON = 'audio-volume-muted-symbolic';
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
@@ -76,12 +77,15 @@ class Indicator extends PanelMenu.Button {
     }
 
     _updateOutputIcon() {
-        if (this._isMuted() && this._volumeMenu._output._icon.icon_name != 'audio-volume-muted-symbolic') {
+        if (this._volumeMenu._output._icon.icon_name != MUTE_ICON) {
+            OUTPUT_ICON = this._volumeMenu._output._icon.icon_name;
+        }
+        if (this._isMuted() && this._volumeMenu._output._icon.icon_name != MUTE_ICON) {
             // Status changed to Muted
-            this._volumeMenu._output._icon.icon_name = 'audio-volume-muted-symbolic';
-        } else if (!this._isMuted() && this._volumeMenu._output._icon.icon_name == 'audio-volume-muted-symbolic') {
+            this._volumeMenu._output._icon.icon_name = MUTE_ICON;
+        } else if (!this._isMuted() && this._volumeMenu._output._icon.icon_name == MUTE_ICON) {
             // Status changed to Unmuted
-            this._volumeMenu._output._icon.icon_name = DEFAULT_OUTPUT_ICON;
+            this._volumeMenu._output._icon.icon_name = OUTPUT_ICON;
         }
     }
 
@@ -96,7 +100,7 @@ class Indicator extends PanelMenu.Button {
             Volume.getMixerControl().disconnect(this._stream_changed_id);
         if (this._volume_event_id)
             this._volume.disconnect(this._volume_event_id);
-        this._volumeMenu._output._icon.icon_name = DEFAULT_OUTPUT_ICON;
+        this._volumeMenu._output._icon.icon_name = OUTPUT_ICON;
         super._onDestroy();
     }
 
