@@ -67,9 +67,6 @@ class Indicator extends PanelMenu.Button {
             return Clutter.EVENT_PROPAGATE;
         });
 
-        log(">>>>>>>>>>>>>>>>>> PACKAGE_VERSION: " + Number.parseFloat(Config.PACKAGE_VERSION));
-        log(">>>>>>>>>>>>>>>>>> PACKAGE_VERSION < 44.0: " + (Number.parseFloat(Config.PACKAGE_VERSION) < 44.0));
-
         if (Number.parseFloat(Config.PACKAGE_VERSION) < 44.0) {
             // Only for Gnome version less then 44 (Gnome 44 or greater natively implements the same behaviour)
             this._volumeMenu._output._icon.set_reactive(true);
