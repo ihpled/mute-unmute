@@ -21,6 +21,7 @@ const GETTEXT_DOMAIN = 'mute-unmute-extension';
 
 const { Clutter, GObject, St } = imports.gi;
 
+const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
@@ -51,20 +52,11 @@ class Indicator extends PanelMenu.Button {
             this._volumeMenu = this._volume;
         }
 
-        this._volumeMenu._output._icon.set_reactive(true);
-        this._output_icon_event_id = this._volumeMenu._output._icon.connect('event', this._onClicked.bind(this));
-
         this._default_sink = Volume.getMixerControl().get_default_sink();
-
         this._default_sink_changed_id = Volume.getMixerControl().connect('default-sink-changed', () => {
             //log('DEFAULT-SINK-CHANGED');
             this._default_sink = Volume.getMixerControl().get_default_sink();
             this._updateOutputIcon();             
-        });
-        
-        this._stream_changed_id = Volume.getMixerControl().connect('stream-changed', () => {
-            //log('STREAM-CHANGED');
-            this._updateOutputIcon(); 
         });
 
         this._volume_event_id = this._volume.connect('button-press-event', (actor, event) => {
@@ -74,6 +66,21 @@ class Indicator extends PanelMenu.Button {
             }
             return Clutter.EVENT_PROPAGATE;
         });
+
+        log(">>>>>>>>>>>>>>>>>> PACKAGE_VERSION: " + Number.parseFloat(Config.PACKAGE_VERSION));
+        log(">>>>>>>>>>>>>>>>>> PACKAGE_VERSION < 44.0: " + (Number.parseFloat(Config.PACKAGE_VERSION) < 44.0));
+
+        if (Number.parseFloat(Config.PACKAGE_VERSION) < 44.0) {
+            // Only for Gnome version less then 44 (Gnome 44 or greater natively implements the same behaviour)
+            this._volumeMenu._output._icon.set_reactive(true);
+            this._output_icon_event_id = this._volumeMenu._output._icon.connect('event', this._onClicked.bind(this));
+            
+            this._stream_changed_id = Volume.getMixerControl().connect('stream-changed', () => {
+                //log('STREAM-CHANGED');
+                this._updateOutputIcon(); 
+            });
+        }
+
     }
 
     _updateOutputIcon() {
