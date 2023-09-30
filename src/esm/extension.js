@@ -17,16 +17,11 @@
 
 /* exported init */
 
-const GETTEXT_DOMAIN = 'mute-unmute-extension';
-
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
-import {
-  Extension,
-  gettext as _,
-} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
@@ -110,8 +105,6 @@ export default class MuteUnmuteExtension extends Extension {
   constructor(meta) {
     super(meta);
     this._uuid = meta.uuid;
-
-    this.initTranslations(GETTEXT_DOMAIN);
   }
 
   enable() {
