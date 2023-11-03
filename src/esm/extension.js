@@ -57,24 +57,12 @@ const Indicator = GObject.registerClass(
     }
 
     _onDestroy() {
-      if (this.volumeOutput) {
-        if (this._default_sink_changed_id)
-          Volume.getMixerControl().disconnect(this._default_sink_changed_id);
+      if (this._volumeOutput) {
         if (this._volume_event_id)
           this._volumeOutput.disconnect(this._volume_event_id);
         this._volumeOutput._output._icon.icon_name = OUTPUT_ICON;
       }
       super._onDestroy();
-    }
-
-    _onClicked(actor, event) {
-      if (
-        event.type() == Clutter.EventType.TOUCH_BEGIN ||
-        event.type() == Clutter.EventType.BUTTON_PRESS
-      ) {
-        this._toggleMuted();
-      }
-      return Clutter.EVENT_STOP;
     }
 
     _toggleMuted() {
