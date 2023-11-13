@@ -31,29 +31,34 @@ const MUTE_ICON = 'audio-volume-muted-symbolic';
 
 const Indicator = GObject.registerClass(
   class Indicator extends PanelMenu.Button {
+
+    _doInit() {
+          if (!Main.panel.statusArea.quickSettings._volumeOutput || !Volume.getMixerControl().get_default_sink()) {
+            setTimeout(() => {this._doInit()}, 1000);
+            return;
+          }
+
+          this._volumeOutput = Main.panel.statusArea.quickSettings._volumeOutput;
+
+          this._default_sink = Volume.getMixerControl().get_default_sink();
+
+          this._volume_event_id = this._volumeOutput.connect(
+            'button-press-event',
+            (actor, event) => {
+              if (event.get_button() === Clutter.BUTTON_MIDDLE) {
+                this._toggleMuted();
+                return Clutter.EVENT_STOP;
+              }
+              return Clutter.EVENT_PROPAGATE;
+            }
+          );
+    }
+    
+
     _init() {
       super._init(0.0, _('Mute Unmute Indicator'), true);
-
       this.hide();
-
-      if (!Main.panel.statusArea.quickSettings._volumeOutput) {
-        return;
-      }
-
-      this._volumeOutput = Main.panel.statusArea.quickSettings._volumeOutput;
-
-      this._default_sink = Volume.getMixerControl().get_default_sink();
-
-      this._volume_event_id = this._volumeOutput.connect(
-        'button-press-event',
-        (actor, event) => {
-          if (event.get_button() === Clutter.BUTTON_MIDDLE) {
-            this._toggleMuted();
-            return Clutter.EVENT_STOP;
-          }
-          return Clutter.EVENT_PROPAGATE;
-        }
-      );
+      this._doInit();
     }
 
     _onDestroy() {
