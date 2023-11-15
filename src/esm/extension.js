@@ -33,8 +33,10 @@ const Indicator = GObject.registerClass(
   class Indicator extends PanelMenu.Button {
 
     _doInit() {
+          // Each time a timeout expires it checks if can initialize otherwise set a new timeout until check is true
           if (!Main.panel.statusArea.quickSettings._volumeOutput || !Volume.getMixerControl().get_default_sink()) {
-            setTimeout(() => {this._doInit()}, 1000);
+            // Saves timeout handle to clear it if during wait time the extension is disabled or removed (destroyed)  
+            this._initTimeout = setTimeout(() => {this._doInit()}, 1000);
             return;
           }
 
@@ -66,6 +68,9 @@ const Indicator = GObject.registerClass(
         if (this._volume_event_id)
           this._volumeOutput.disconnect(this._volume_event_id);
         this._volumeOutput._output._icon.icon_name = OUTPUT_ICON;
+      }
+      if (this._initTimeout) {
+        clearTimeout(this._initTimeout);
       }
       super._onDestroy();
     }
