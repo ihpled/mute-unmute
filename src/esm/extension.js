@@ -26,9 +26,6 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
 
-let OUTPUT_ICON = 'audio-speakers-symbolic';
-const MUTE_ICON = 'audio-volume-muted-symbolic';
-
 const Indicator = GObject.registerClass(
   class Indicator extends PanelMenu.Button {
 
@@ -40,15 +37,34 @@ const Indicator = GObject.registerClass(
             return;
           }
 
-          this._volumeOutput = Main.panel.statusArea.quickSettings._volumeOutput;
+          // Output
 
+          this._volumeOutput = Main.panel.statusArea.quickSettings._volumeOutput;
+          
           this._default_sink = Volume.getMixerControl().get_default_sink();
 
-          this._volume_event_id = this._volumeOutput.connect(
+          this._volume_output_event_id = this._volumeOutput.connect(
             'button-press-event',
             (actor, event) => {
               if (event.get_button() === Clutter.BUTTON_MIDDLE) {
-                this._toggleMuted();
+                this._toggleOutputMuted();
+                return Clutter.EVENT_STOP;
+              }
+              return Clutter.EVENT_PROPAGATE;
+            }
+          );
+
+          // Input
+
+          this._volumeInput = Main.panel.statusArea.quickSettings._volumeInput;
+
+          this._default_source = Volume.getMixerControl().get_default_source();
+
+          this._volume_input_event_id = this._volumeInput.connect(
+            'button-press-event',
+            (actor, event) => {
+              if (event.get_button() === Clutter.BUTTON_MIDDLE) {
+                this._toggleInputMuted();
                 return Clutter.EVENT_STOP;
               }
               return Clutter.EVENT_PROPAGATE;
@@ -65,9 +81,12 @@ const Indicator = GObject.registerClass(
 
     _onDestroy() {
       if (this._volumeOutput) {
-        if (this._volume_event_id)
-          this._volumeOutput.disconnect(this._volume_event_id);
-        this._volumeOutput._output._icon.icon_name = OUTPUT_ICON;
+        if (this._volume_output_event_id)
+          this._volumeOutput.disconnect(this._volume_output_event_id);
+      }
+      if (this._volumeInput) {
+        if (this._volume_input_event_id)
+          this._volumeInput.disconnect(this._volume_input_event_id);
       }
       if (this._initTimeout) {
         clearTimeout(this._initTimeout);
@@ -75,26 +94,52 @@ const Indicator = GObject.registerClass(
       super._onDestroy();
     }
 
-    _toggleMuted() {
-      if (this._isMuted()) {
-        // Unmute
-        this._setMuted(false);
-        //Main.notify('Audio unmuted');
+    // Output
+
+    _toggleOutputMuted() {
+      if (this._isOutputMuted()) {
+        // Unmute Output
+        this._setOutputMuted(false);
+        //Main.notify('Output unmuted');
       } else {
-        // Mute
-        this._setMuted(true);
-        //Main.notify('Audio muted');
+        // Mute Output
+        this._setOutputMuted(true);
+        //Main.notify('Output muted');
       }
     }
 
-    _setMuted(value) {
+    _setOutputMuted(value) {
       if (!this._default_sink) return;
       this._default_sink.change_is_muted(value);
     }
 
-    _isMuted() {
+    _isOutputMuted() {
       if (!this._default_sink) return false;
       return this._default_sink.is_muted;
+    }
+
+    // Input
+
+    _toggleInputMuted() {
+      if (this._isInputMuted()) {
+        // Unmute Input
+        this._setInputMuted(false);
+        //Main.notify('Input unmuted');
+      } else {
+        // Mute Input
+        this._setInputMuted(true);
+        //Main.notify('Input muted');
+      }
+    }
+
+    _setInputMuted(value) {
+      if (!this._default_source) return;
+      this._default_source.change_is_muted(value);
+    }
+
+    _isInputMuted() {
+      if (!this._default_source) return false;
+      return this._default_source.is_muted;
     }
   }
 );
