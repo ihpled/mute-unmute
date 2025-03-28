@@ -5,8 +5,8 @@
     "paypal": "MCastaldo"
   },
   "name": "Mute/Unmute",
-  "shell-version": ["45", "46", "47"],
+  "shell-version": ["45", "46", "47", "48"],
   "url": "https://github.com/ihpled/mute-unmute",
   "uuid": "mute-unmute@mcast.gnomext.com",
-  "version": 17
+  "version": 20
 }
